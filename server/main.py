@@ -17,6 +17,7 @@ class Game:
         self.p2_rap = []
         self.p1_damage = 0
         self.p2_damage = 0
+        self.p2_socket = None
         self.raps_submitted=0
 
     def register_player_2(self, p2_socket, p2_attributes):
@@ -59,29 +60,36 @@ async def submit_rap(websocket, data):
         await active_games[str(code)].p1_socket.send(json.dumps({"opponent_rap": active_games[str(code)].p2_rap, "opponent_damage": active_games[str(code)].p2_damage, "your_damage": active_games[str(code)].p1_damage}))
         await active_games[str(code)].p2_socket.send(json.dumps({"opponent_rap": active_games[str(code)].p1_rap, "opponent_damage": active_games[str(code)].p1_damage, "your_damage": active_games[str(code)].p2_damage}))
 
+async def are_we_there_yet(websocket, data):
+    print("checking if we are there yet")
+    await websocket.send(json.dumps({"ARE_WE_THERE_YET": False}))
 
 async def handler(websocket):
     while True:
         try:
             data = await websocket.recv()
             data = json.loads(data)
+            print("data:")
             print(data)
             match data["request_type"]:
                 case "CREATE_LOBBY":
                     print("creating lobby")
                     await create_lobby(websocket, data["data"])
-                    break
 
                 case "JOIN_LOBBY":
                     print("joining lobby")
                     await join_lobby(websocket, data["data"])
-                    break
 
                 case "SUBMIT_RAP":
                     print("submitting rap")
                     await submit_rap(websocket, data["data"])
 
+                case "ARE_WE_THERE_YET":
+                    print("checking if we are there yet")
+                    await are_we_there_yet(websocket, data)
+
         except ConnectionClosed:
+            print("Connection closed")
             break
 
 

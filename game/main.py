@@ -338,20 +338,18 @@ def gameLoop(nw):
 
             screen.fill((0,0,0))
             message = None
-            stuff = False
-            try:
-                message = asyncio.wait_for(nw.websocket.recv(), timeout=0.5)
-                stuff = True
-            except:
-                pass
-            if stuff:
-                loadTxt.lastClicked = pygame.time.get_ticks()
-                loadTxt.setText(randomTip(loadTips))
-                state += 1 #this is load area wait for players.
-                player2,p2Img = createPlayer(message["opponent_attributes"]["name"],(-100,300),host,[1,0.5,1.5])
+            if host == True:
+                if nw.are_we_there_yet(str(codeTxt.text)):
+                    print("stuffed indeed")
+                    loadTxt.lastClicked = pygame.time.get_ticks()
+                    loadTxt.setText(randomTip(loadTips))
+                    state += 1 #this is load area wait for players.
+                    player2,p2Img = createPlayer(message["opponent_attributes"]["name"],(-100,300),host,[1,0.5,1.5])
 
             loadTxt.draw(screen,(0,0))
             codeTxt.draw(screen,(100,0))
+            if not host:
+                state += 1
         elif state == 4:
             for event in pygame.event.get():
 

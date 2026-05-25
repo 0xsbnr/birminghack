@@ -12,6 +12,7 @@ class Network:
         print("sending request...")
         try:
             print("sending request 2...")
+            print(json.dumps({"request_type": req_type, "data": data}))
             self.websocket.send(json.dumps({"request_type": req_type, "data": data}))
             print("sending request 3...")
             response = self.websocket.recv()
@@ -26,6 +27,11 @@ class Network:
         response = self.request_sender("CREATE_LOBBY", playerInfo)
         print("got response from request builder")
         return response.get("code")
+    
+    def are_we_there_yet(self, code):
+        response = self.request_sender("ARE_WE_THERE_YET", {"code": code})
+        print(response)
+        return response["ARE_WE_THERE_YET"]
     
 
     def join_lobby(self, playerInfo, code):
